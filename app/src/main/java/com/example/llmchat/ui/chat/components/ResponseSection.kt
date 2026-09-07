@@ -14,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.llmchat.R
 import com.example.llmchat.ui.chat.ChatUiState
+import java.util.Locale
 
 @Composable
 fun ResponseSection(
@@ -24,8 +25,16 @@ fun ResponseSection(
         Text(
             text = stringResource(R.string.response_label),
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(bottom = 8.dp)
+            modifier = Modifier.padding(bottom = 4.dp)
         )
+
+        if (uiState.elapsedMillis != null) {
+            ResponseMetrics(
+                elapsedMillis = uiState.elapsedMillis,
+                totalTokens = uiState.totalTokens,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
 
         OutlinedTextField(
             value = uiState.responseText,
@@ -38,4 +47,29 @@ fun ResponseSection(
             placeholder = { Text(stringResource(R.string.response_placeholder)) }
         )
     }
+}
+
+@Composable
+private fun ResponseMetrics(
+    elapsedMillis: Long,
+    totalTokens: Int?,
+    modifier: Modifier = Modifier
+) {
+    val elapsedSeconds = elapsedMillis / 1000.0
+    val timeText = stringResource(
+        R.string.metrics_time,
+        String.format(Locale.getDefault(), "%.2f", elapsedSeconds)
+    )
+    val tokensText = if (totalTokens != null) {
+        stringResource(R.string.metrics_tokens, totalTokens)
+    } else {
+        stringResource(R.string.metrics_tokens_unknown)
+    }
+
+    Text(
+        text = "$timeText  ·  $tokensText",
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = modifier
+    )
 }

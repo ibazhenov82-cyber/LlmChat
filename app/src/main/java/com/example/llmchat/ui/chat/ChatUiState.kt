@@ -7,6 +7,8 @@ data class ChatUiState(
     val promptText: String = "",
     val isLoading: Boolean = false,
     val responseText: String = "",
+    val elapsedMillis: Long? = null,
+    val totalTokens: Int? = null,
     val errorMessage: String? = null
 ) {
     /** Кнопка "Отправить" активна только когда есть непустой текст задачи и нет запроса в процессе. */

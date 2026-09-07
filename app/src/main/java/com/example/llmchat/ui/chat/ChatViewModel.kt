@@ -28,7 +28,15 @@ class ChatViewModel(private val repository: LlmRepository) : ViewModel() {
         val currentState = _uiState.value
         if (!currentState.isSendEnabled) return
 
-        _uiState.update { it.copy(isLoading = true, errorMessage = null, responseText = "") }
+        _uiState.update {
+            it.copy(
+                isLoading = true,
+                errorMessage = null,
+                responseText = "",
+                elapsedMillis = null,
+                totalTokens = null
+            )
+        }
 
         viewModelScope.launch {
             val result = repository.sendPrompt(
@@ -37,8 +45,15 @@ class ChatViewModel(private val repository: LlmRepository) : ViewModel() {
             )
 
             result.fold(
-                onSuccess = { text ->
-                    _uiState.update { it.copy(isLoading = false, responseText = text) }
+                onSuccess = { chatResult ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            responseText = chatResult.content,
+                            elapsedMillis = chatResult.elapsedMillis,
+                            totalTokens = chatResult.totalTokens
+                        )
+                    }
                 },
                 onFailure = { error ->
                     _uiState.update {

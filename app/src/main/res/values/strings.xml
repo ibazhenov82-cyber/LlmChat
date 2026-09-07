@@ -13,4 +13,8 @@
 
     <string name="response_label">Ответ</string>
     <string name="response_placeholder">Здесь появится решение</string>
+
+    <string name="metrics_time">Время: %1$s с</string>
+    <string name="metrics_tokens">Токены: %1$d</string>
+    <string name="metrics_tokens_unknown">Токены: —</string>
 </resources>

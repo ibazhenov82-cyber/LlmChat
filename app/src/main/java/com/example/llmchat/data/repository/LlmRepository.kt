@@ -9,11 +9,21 @@ import com.example.llmchat.data.network.ChatApi
 import retrofit2.HttpException
 import java.io.IOException
 
+/**
+ * Результат обращения к LLM: текст решения плюс метрики выполнения запроса.
+ */
+data class ChatResult(
+    val content: String,
+    val elapsedMillis: Long,
+    val totalTokens: Int?
+)
+
 interface LlmRepository {
     /**
-     * Отправляет текст задачи выбранной модели и возвращает текст решения из choices[0].message.content.
+     * Отправляет текст задачи выбранной модели и возвращает решение из choices[0].message.content
+     * вместе с временем выполнения запроса и количеством токенов (usage.total_tokens).
      */
-    suspend fun sendPrompt(model: LlmModel, prompt: String): Result<String>
+    suspend fun sendPrompt(model: LlmModel, prompt: String): Result<ChatResult>
 }
 
 class LlmRepositoryImpl(
@@ -21,7 +31,7 @@ class LlmRepositoryImpl(
     private val ollamaApi: ChatApi
 ) : LlmRepository {
 
-    override suspend fun sendPrompt(model: LlmModel, prompt: String): Result<String> {
+    override suspend fun sendPrompt(model: LlmModel, prompt: String): Result<ChatResult> {
         if (model.provider == LlmProvider.DEEPSEEK && BuildConfig.DEEPSEEK_API_KEY.isBlank()) {
             return Result.failure(
                 IllegalStateException("Не задан DEEPSEEK_API_KEY в local.properties")
@@ -34,16 +44,24 @@ class LlmRepositoryImpl(
         )
 
         return try {
+            val startNanos = System.nanoTime()
             val response = when (model.provider) {
                 LlmProvider.DEEPSEEK -> deepSeekApi.createChatCompletion(request)
                 LlmProvider.OLLAMA_LOCAL -> ollamaApi.createChatCompletion(request)
             }
+            val elapsedMillis = (System.nanoTime() - startNanos) / 1_000_000
 
             val content = response.choices?.firstOrNull()?.message?.content?.trim()
             if (content.isNullOrBlank()) {
                 Result.failure(IllegalStateException("Пустой ответ от модели"))
             } else {
-                Result.success(content)
+                Result.success(
+                    ChatResult(
+                        content = content,
+                        elapsedMillis = elapsedMillis,
+                        totalTokens = response.usage?.totalTokens
+                    )
+                )
             }
         } catch (e: HttpException) {
             val serverMessage = runCatching { e.response()?.errorBody()?.string() }.getOrNull()
