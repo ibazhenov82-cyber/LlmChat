@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Нужен для обращения к DeepSeek API и к локальному серверу Ollama -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:name=".LlmChatApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:roundIcon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
+        android:theme="@style/Theme.LlmChat">
+
+        <!--
+            usesCleartextTraffic="true" нужен, так как локальный Ollama-сервер обычно
+            доступен по обычному http (не https), например http://10.0.2.2:11434/.
+            Для боевого продакшн-приложения вместо этого стоит использовать
+            network_security_config.xml с точечным разрешением cleartext только
+            для конкретного локального хоста.
+        -->
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.LlmChat">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">LLM Chat</string>
+    <string name="app_title">Чат с LLM</string>
+
+    <string name="model_selector_title">Выберите модель</string>
+    <string name="model_provider_local">Локально · Ollama</string>
+    <string name="model_provider_api">DeepSeek API</string>
+
+    <string name="prompt_label">Текст задачи</string>
+    <string name="prompt_placeholder">Введите текст задачи…</string>
+
+    <string name="send_button">Отправить</string>
+
+    <string name="response_label">Ответ</string>
+    <string name="response_placeholder">Здесь появится решение</string>
+</resources>

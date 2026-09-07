@@ -1,0 +1,9 @@
+<resources>
+    <!--
+        Compose сам управляет цветовой схемой через MaterialTheme (см. ui/theme/Theme.kt).
+        Эта тема используется системой только до отрисовки первого Compose-кадра
+        (splash/окно), поэтому достаточно простой платформенной темы без
+        зависимости от Material Components library.
+    -->
+    <style name="Theme.LlmChat" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>
